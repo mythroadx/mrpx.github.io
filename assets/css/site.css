@@ -1390,9 +1390,9 @@ pre.code .p { color: var(--phos); }
 /* ---------- responsive ---------- */
 
 @media (max-width: 1080px) {
-  .hero { grid-template-columns: 1fr; gap: 44px; padding: 64px 0 56px; }
-  .stage { order: -1; justify-content: flex-start; }
-  .device { width: 300px; }
+  .hero { grid-template-columns: 1fr; gap: 40px; padding: 56px 0; }
+  .stage { order: 2; justify-content: center; }
+  .device { width: 320px; }
   .split, .steps { grid-template-columns: 1fr; gap: 32px; }
   .feature-grid { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: repeat(2, 1fr); }
