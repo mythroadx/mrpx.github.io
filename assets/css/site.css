@@ -939,7 +939,7 @@ pre.code .p { color: var(--phos); }
   min-height: 34px;
 }
 
-.play-keys button span { display: block; font-family: var(--mono); font-size: 8.5px; color: var(--fg-faint); margin-top: 1px; }
+.play-keys button span { display: block; font-family: var(--mono); font-size: 9.5px; color: var(--fg-faint); margin-top: 1px; }
 .play-keys button:hover:not(:disabled) { border-color: rgba(134, 239, 169, .35); color: var(--fg); }
 .play-keys button:disabled { opacity: .38; cursor: default; }
 .play-keys button.pressed { background: rgba(134, 239, 169, .18); border-color: var(--phos-dim); color: var(--phos); }
