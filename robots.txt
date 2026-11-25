@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /play/runtime/
+Disallow: /play/vendor/

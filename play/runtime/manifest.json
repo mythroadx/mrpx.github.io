@@ -1,0 +1,11 @@
+{
+  "files": [
+    "cfunction.ext",
+    "mythroad/dsm_gm.mrp",
+    "mythroad/plugins/netpay.mrp",
+    "mythroad/plugins/flaengine.mrp",
+    "mythroad/plugins/ose/brwcore.mrp",
+    "mythroad/system/gb12.uc2",
+    "mythroad/system/gb16.uc2"
+  ]
+}

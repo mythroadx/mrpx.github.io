@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文档 — mrpx</title>
+<meta name="description" content="mrpx 的项目说明、运行方式、工具链、WASM 构建、测试矩阵、兼容边界、历史来源与发布流程。">
+<meta name="theme-color" content="#06080a">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="../" aria-label="mrpx 首页"><span class="mark">M</span>mrpx<small>MRP EMULATOR</small></a>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="../">概览</a>
+      <a href="../play/">在线试玩</a>
+      <a href="../library/">应用库</a>
+      <a href="../docs/" aria-current="page">文档</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="ghost-link" href="https://github.com/mythroadx/mrpx" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="btn btn-primary btn-sm" href="https://github.com/mythroadx/mrpx/releases/latest" target="_blank" rel="noopener">下载</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="doc-layout">
+    <nav class="toc" aria-label="文档目录">
+      <span class="grp">说明</span>
+      <a href="#project">项目与运行</a>
+      <a href="#controls">操作与输入</a>
+      <a href="#limits">兼容与安全边界</a>
+      <span class="grp">工程</span>
+      <a href="#build">工具链与构建</a>
+      <a href="#tests">测试矩阵</a>
+      <a href="#structure">工程结构</a>
+      <span class="grp">背景</span>
+      <a href="#history">来源与致谢</a>
+      <a href="#research">研究资料</a>
+      <a href="#release">发布与校验</a>
+    </nav>
+
+    <article class="doc-body">
+      <p class="eyebrow">Documentation</p>
+      <h1>把项目拆开来看</h1>
+      <p>这一页是仓库文档的浓缩版，方便在浏览器里快速查阅。构建细节、工具链路径与全部验收项以 GitHub 上的完整文档为准；两者不一致时，以仓库文档和实际构建结果为准。</p>
+
+      <h2 id="project">项目与运行</h2>
+      <p>mrpx 是基于原 VMRP 项目整理的 Mythroad MRP 模拟器。它在 x86-64 桌面宿主中通过 Unicorn 执行 ARM Guest 代码，并桥接文件、网络、图形、输入和计时器等 Mythroad DSM 接口。桌面版本支持 Windows 与 Linux，WebAssembly 版本可在现代浏览器中运行。</p>
+      <ul>
+        <li><strong>桌面版</strong>：默认启动 <code>dsm_gm.mrp</code> 应用列表。把 MRP 放入可执行文件旁的 <code>mythroad</code> 文件夹后从列表选择，也可用 Open MRP、<kbd>Ctrl+O</kbd> 或拖放打开。</li>
+        <li><strong>网页版</strong>：必须经 HTTP(S) 或 localhost 打开，不能直接双击 HTML 文件。可直接使用本站的<a href="../play/">在线试玩</a>，或在本地 <code>make serve PORT=18766</code> 后访问 <code>/build/web/main.html</code>。</li>
+        <li><strong>会话数据</strong>：浏览器文件系统只在内存中，刷新页面即重置；桌面应用数据保存在运行目录的 <code>mythroad</code> 下。</li>
+      </ul>
+
+      <h2 id="controls">操作与输入</h2>
+      <p>网页版提供 21 键虚拟手机键盘，映射与桌面虚拟键盘一致：方向键 ↑ ↓ ← →，<code>◧</code>、<code>◨</code> 为左右软键，<code>☎</code> 接听、<code>☎×</code> 挂机，数字与 <code>*</code>、<code>#</code> 保持原始键值。物理键盘同样可用，建议先点击一次画布再按键。</p>
+      <p>桌面 Windows 版本额外提供 <strong>Rotate 90°</strong>（每次顺时针旋转 90°，四次复位）、<strong>Photo</strong>（保存当前方向 PNG 截图）与 <strong>Record</strong>（录制无声 H.264 MP4 到 <code>captures</code>）。录像依赖 Windows Media Foundation 与 H.264 编码器，部分 Windows N 系统需安装媒体功能包；Linux 与 Web 版本不提供截图与录像按钮。</p>
+      <p>Console 是 MRP 编辑框接口，不是命令行：应用请求输入时在其中填写并提交，取消会保留原文本。声音需手动点击“启用 / 恢复”，浏览器要求用户激活后才能启动 AudioWorklet。</p>
+
+      <h2 id="limits">兼容与安全边界</h2>
+      <p>不同 MRP 可能包含脚本字节码、ARM/Thumb 原生扩展，或两者兼有。宿主的<strong>内存范围与 ABI 检查</strong>用于避免 Guest 越界访问宿主缓冲区，但<strong>不构成完整沙箱</strong>；运行来源不明的 MRP 仍需谨慎。</p>
+      <p>项目不是 ESP32 移植版，也不承诺兼容所有 MRP。桌面与 Web 的回归覆盖固定启动器、MPC 测试夹具与 ARM/Thumb 样例，不代表所有设备、网络服务、音频功能或第三方应用均可用。WAV/MP3 播放、部分机型的专有插件不在当前范围内。</p>
+
+      <h2 id="build">工具链与构建</h2>
+      <p>Windows x64 + PowerShell 7 是参考环境。下表区分最低要求与已测版本，混用版本组合不保证兼容。首次构建需要联网下载 Emscripten ports、WASM 后端源码与 MIDI 音色，之后测试与网页运行不依赖第三方网络。</p>
+      <table>
+        <thead><tr><th>组件</th><th>版本 / 要求</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>MinGW-w64 GCC</td><td>13.2.0，<code>x86_64-w64-mingw32</code></td><td>桌面 x64 构建</td></tr>
+          <tr><td>MSYS2 工具</td><td><code>sh</code>、<code>mkdir</code>、<code>cp</code>、<code>rm</code></td><td>Make recipe 依赖 POSIX 命令</td></tr>
+          <tr><td>SDL2 MinGW SDK</td><td>2.32.10，x86_64</td><td>桌面显示、输入与运行 DLL</td></tr>
+          <tr><td>Unicorn</td><td>2.1.4</td><td>ARM/Thumb Guest 执行</td></tr>
+          <tr><td>Emscripten SDK</td><td><strong>6.0.12</strong></td><td>WASM 编译；不要用漂移的 latest 复现</td></tr>
+          <tr><td>Ninja</td><td>1.13.0</td><td>WASM 后端构建生成器</td></tr>
+          <tr><td>Python</td><td>3.10+</td><td>本机回归、HTTP 服务</td></tr>
+          <tr><td>Node.js / npm</td><td>24+</td><td>MIDI 资源准备与前端测试</td></tr>
+        </tbody>
+      </table>
+      <p>参考命令：</p>
+      <pre><code>make main                          # 桌面构建，产出 bin/main.exe
+make wasm-unicorn                  # 固定 unicorn.wasm 后端
+make wasm                          # WASM 编译 + prepare-web
+make serve PORT=18766              # 本地 HTTP 服务
+make test test-build test-mrp      # 单元、构建入口与真实 MRP 回归</code></pre>
+      <p><code>make wasm</code> 会把 <code>wasm/web</code> 的 HTML/CSS/JS 与 manifest 中的种子复制到 <code>build/web</code>；部署必须完整提供该目录，不能直接打开源码 HTML。WASM 后端来自固定提交的 <code>unicorn.wasm</code> 源码并应用仓库补丁，需配套 <code>libunicorn.a</code>、<code>libarm-softmmu.a</code>、<code>libunicorn-common.a</code> 三个库，禁止混用旧产物。</p>
+
+      <h2 id="tests">测试矩阵</h2>
+      <table>
+        <thead><tr><th>阶段</th><th>命令 / 检查</th><th>产物与判据</th></tr></thead>
+        <tbody>
+          <tr><td>桌面单测</td><td><code>make test test-controls</code></td><td><code>build\tests</code></td></tr>
+          <tr><td>构建入口</td><td><code>make test-build</code></td><td>资源保留、路径边界、页面与种子准备</td></tr>
+          <tr><td>JS 逻辑</td><td><code>make test-web-controls</code></td><td>七项键盘与编辑框测试</td></tr>
+          <tr><td>MIDI 逻辑</td><td><code>make test-web-audio</code></td><td>六项生命周期与竞态测试</td></tr>
+          <tr><td>真实 MRP</td><td><code>make test-mrp</code></td><td>六场景、独立运行目录与结果 JSON</td></tr>
+          <tr><td>WASM 后端</td><td><code>make test-wasm-unicorn</code></td><td>退出码 0 与 smoke 标记</td></tr>
+          <tr><td>浏览器端到端</td><td>打开 <code>/tests/wasm_mrp_browser_tests.html</code></td><td>标题 <code>PASS: mrpx WASM regression</code></td></tr>
+        </tbody>
+      </table>
+      <p>只运行 Web mock 测试不等于验证真实 WASM；只看到页面不等于 MRP 已成功启动。浏览器测试需在 localhost 安全上下文完成，并对慢机器的标签页节流留出时间。</p>
+
+      <h2 id="structure">工程结构</h2>
+      <table>
+        <thead><tr><th>路径</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>src/</code>、<code>include/</code></td><td>桌面宿主、DSM 桥接、平台接口</td></tr>
+          <tr><td><code>wasm/</code></td><td>WebAssembly 构建配置与网页源码</td></tr>
+          <tr><td><code>assets/runtime/</code></td><td>桌面与 Web 共用的 Guest 运行时及资源种子</td></tr>
+          <tr><td><code>tests/fixtures/mrp/</code></td><td>固定 ARM/Thumb MRP 回归样例</td></tr>
+          <tr><td><code>tools/</code>、<code>scripts/</code></td><td>MRP 分析、测试与构建实现</td></tr>
+          <tr><td><code>docs/research/</code></td><td>历史 Mythroad / MRC 源码、SDK 与格式研究样本</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="history">来源与致谢</h2>
+      <p>mrpx 源自 <a href="https://github.com/vmrp/vmrp" target="_blank" rel="noopener">VMRP 原仓库</a>，原 README 记载原作者为曾明。mrpx 延续其 ARM Guest 执行与 Mythroad DSM 桥接方向，并整理了现代仓库结构、桌面/Web 构建、测试与发布流程。</p>
+      <p>项目名称、发行包与网页运行文件使用 <code>mrpx</code>；为兼容保留的内部标识包括 <code>include/vmrp</code>、<code>VMRP</code> 编译宏和部分运行时环境变量。维护者说明中注明，本项目基于原项目并借助 AI 进行大规模重构整理，原有实现不作为维护者的原创成果；原项目作者与贡献者的工作应归属其各自作者。</p>
+
+      <h2 id="research">研究资料</h2>
+      <p>仓库保留了 Mythroad Guest 运行时、MRC SDK、ARM/Thumb 实验与 MRP/EXT/FMT 样本，统一放在 <code>docs/research/</code>。这些文件用于研究，不是桌面或 Web 构建的自动输入。</p>
+      <p>当前宿主直接加载的预编译 Guest 模块与 MRP 种子列在 <code>assets/runtime/manifest.json</code>。历史 Guest 源码与这些二进制之间尚未建立完整、可重复的生成对应关系：修改历史源码不会自动改变实际运行的 Guest。固定回归包单独保存在 <code>tests/fixtures/mrp/</code>，其哈希与用途有记录；研究时应保留原始样本，并用独立的新样本验证格式或 ABI 假设。</p>
+
+      <h2 id="release">发布与校验</h2>
+      <p>GitHub Actions 仅由推送 tag 触发，tag 必须是完整的稳定版本 <code>vX.Y.Z</code>；<code>v1.2</code>、<code>v1.2.3-rc.1</code>、<code>v1.2.3+build</code>、<code>V1.2.3</code> 不发布。每次发布生成三个 ZIP 与一个 <code>SHA256SUMS.txt</code>：</p>
+      <table>
+        <thead><tr><th>文件</th><th>内容与运行要求</th></tr></thead>
+        <tbody>
+          <tr><td><code>mrpx-vX.Y.Z-windows-amd64.zip</code></td><td>Windows x64 原生程序、SDL2/工具链 DLL、固定种子与许可证，运行 <code>bin/main.exe</code></td></tr>
+          <tr><td><code>mrpx-vX.Y.Z-linux-amd64.zip</code></td><td>Ubuntu 24.04 x86_64 程序、启动脚本；需系统 GTK4 与 SDL2 运行库</td></tr>
+          <tr><td><code>mrpx-vX.Y.Z-wasm.zip</code></td><td>完整静态站点 <code>web/</code>，以及内嵌该站点的 Windows/Linux Go 服务器</td></tr>
+        </tbody>
+      </table>
+      <p>ZIP 内的 <code>SOURCES.txt</code> 保留原 VMRP 来源说明。Windows、Linux 与 WASM 发行包均不包含 MPC 或阅读器，MPC 只作为测试夹具保留。</p>
+
+      <p style="margin-top:34px;color:var(--fg-faint);font-size:13px">完整文档：<a href="https://github.com/mythroadx/mrpx/tree/master/docs" target="_blank" rel="noopener">docs/ ↗</a> · <a href="https://github.com/mythroadx/mrpx/blob/master/docs/DEVELOPMENT.md" target="_blank" rel="noopener">DEVELOPMENT.md ↗</a> · <a href="https://github.com/mythroadx/mrpx/blob/master/docs/LINUX.md" target="_blank" rel="noopener">LINUX.md ↗</a></p>
+    </article>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="margin-top:0;border-top:0;padding-top:0">
+      <span>MRPX · DOCUMENTATION · GPL-3.0</span>
+      <span>以仓库文档与实际构建结果为准</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+<script src="../assets/js/site.js" defer></script>
+</body>
+</html>

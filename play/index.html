@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>在线试玩 — mrpx</title>
+<meta name="description" content="在浏览器里运行 Mythroad MRP 应用：mrpx WebAssembly 版提供实时画面、21 键虚拟手机键盘、Console 与 MRP 导入。">
+<meta name="theme-color" content="#05070a">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="play-body">
+<div class="wrap">
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="../" aria-label="mrpx 首页"><span class="mark">M</span>mrpx<small>MRP EMULATOR</small></a>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="../">概览</a>
+      <a href="../play/" aria-current="page">在线试玩</a>
+      <a href="../library/">应用库</a>
+      <a href="../docs/">文档</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="ghost-link" href="../library/">换一个应用 ↗</a>
+      <input type="file" id="files" multiple hidden accept=".mrp">
+      <button type="button" id="import" class="btn btn-outline btn-sm" disabled>导入 MRP</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="play-top">
+    <span class="play-title" id="playTitle">dsm_gm.mrp · 应用列表</span>
+    <span class="runtime-state" id="runtimeState" data-state="loading" role="status">等待启动</span>
+    <progress class="progress" id="progress" value="0" max="100" aria-label="运行资源加载进度" style="visibility:hidden"></progress>
+    <span class="play-title" id="status" role="status" style="font-size:11.5px;color:var(--fg-faint)">正在加载运行资源…</span>
+  </div>
+
+  <div class="play-shell">
+    <section class="play-stage" aria-label="模拟器">
+      <div class="play-device">
+        <div class="play-screen" id="playScreen">
+          <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1" aria-label="MRP 应用屏幕"></canvas>
+          <div id="dialog" role="dialog" aria-labelledby="dialogTitle">
+            <h1 id="dialogTitle">标题</h1>
+            <textarea aria-label="MRP 对话框内容"></textarea>
+            <div class="control">
+              <button type="button" id="dialogOk" class="btn btn-primary btn-sm">确定</button>
+              <span id="dialogInfo">0/0</span>
+              <button type="button" id="dialogCancel" class="btn btn-outline btn-sm">取消</button>
+            </div>
+          </div>
+          <span class="scan"></span>
+        </div>
+
+        <div class="play-keys" id="keymap" role="group" aria-label="虚拟手机键盘">
+          <button id="key_sleft" class="key-soft">左软键<span>Q / [</span></button>
+          <button id="key_up" aria-label="向上">↑</button>
+          <button id="key_sright" class="key-soft">右软键<span>E / ]</span></button>
+          <button id="key_left" aria-label="向左">←</button>
+          <button id="key_ok" class="key-confirm">OK</button>
+          <button id="key_right" aria-label="向右">→</button>
+          <button id="key_send" class="key-call">接听<span>TAB</span></button>
+          <button id="key_down" aria-label="向下">↓</button>
+          <button id="key_power" class="key-end">挂机<span>ESC</span></button>
+          <button id="key_1">1</button><button id="key_2">2</button><button id="key_3">3</button>
+          <button id="key_4">4</button><button id="key_5">5</button><button id="key_6">6</button>
+          <button id="key_7">7</button><button id="key_8">8</button><button id="key_9">9</button>
+          <button id="key_star">*<span>−</span></button><button id="key_0">0</button><button id="key_pound">#<span>=</span></button>
+        </div>
+        <p class="play-hint">鼠标、触屏或键盘 · 支持长按 · 先点一下屏幕再按键</p>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="audio-row panel">
+        <span class="icon">♪</span>
+        <div class="copy">
+          <h2>声音</h2>
+          <p id="audioStatus" role="status">声音未启用 · MIDI 经 AudioWorklet</p>
+        </div>
+        <button type="button" id="audioEnable" class="mini-btn">启用 / 恢复</button>
+      </div>
+
+      <section class="panel console-panel" aria-labelledby="consoleTitle">
+        <div class="panel-head">
+          <h2 id="consoleTitle">Console</h2>
+          <div class="mini">
+            <button class="mini-btn" id="consoleClear" type="button">清空</button>
+            <button class="mini-btn" id="consoleCopy" type="button">复制</button>
+          </div>
+        </div>
+        <div class="console-area">
+          <textarea id="consoleOutput" readonly spellcheck="false" aria-label="MRP 和模拟器日志"></textarea>
+          <div class="console-prompt"><span id="consolePrompt" aria-live="polite">应用当前未等待输入</span><kbd>Ctrl + Enter</kbd></div>
+          <textarea id="consoleInput" disabled aria-label="MRP 文本输入" placeholder="应用请求输入后，在这里填写…"></textarea>
+          <input id="consolePassword" type="password" hidden disabled aria-label="MRP 密码输入" autocomplete="off" placeholder="请输入应用请求的密码">
+          <div class="console-foot">
+            <span>MRP 编辑框接口，非命令行</span>
+            <div class="mini">
+              <button class="mini-btn" id="consoleCancel" type="button" disabled>取消</button>
+              <button class="mini-btn" id="consoleSubmit" type="button" disabled style="color:var(--phos);border-color:var(--phos-dim)">提交</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="drawerTitle">
+        <div class="panel-head">
+          <h2 id="drawerTitle">应用目录</h2>
+          <div class="mini"><a class="mini-btn" href="../library/">全部 ↗</a></div>
+        </div>
+        <div class="drawer">
+          <input id="catalogSearch" type="search" placeholder="搜索名称或 APPID…" autocomplete="off" spellcheck="false">
+          <div class="drawer-grid" id="drawerGrid"></div>
+          <p class="drawer-empty" id="drawerEmpty" hidden>没有匹配的应用。</p>
+          <p class="notice" id="runtimeNote" hidden></p>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <p class="notice" style="margin:0 0 40px">当前会话的文件只保存在内存中，刷新页面即重置。应用内的“退出/返回”会回到 dsm_gm.mrp 应用列表；导入的 MRP 与截图不会上传到任何服务器。</p>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="margin-top:0;border-top:0;padding-top:0">
+      <span>MRPX · WEBASSEMBLY RUNTIME · GPL-3.0</span>
+      <span>Unicorn 2.1.4 · SpessaSynth + GeneralUser GS</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+<script src="midi.js"></script>
+<script src="app.js"></script>
+<script src="controls.js"></script>
+<script src="filesystem.js"></script>
+<script async src="mrpx.js"
+  onerror="Module.setStatus('WebAssembly 运行文件未就绪');vmrpConsoleLog('无法加载 mrpx.js。本站应包含发布包中的 mrpx.js 与 mrpx.wasm。')"></script>
+</body>
+</html>

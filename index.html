@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mrpx — 小小屏幕，熟悉的世界 · Mythroad MRP 模拟器</title>
+<meta name="description" content="mrpx 是基于 VMRP 重构整理的 Mythroad MRP 模拟器：用 Unicorn 执行 ARM/Thumb Guest 代码，通过 DSM 桥接把 240×320 的经典手机应用带回 Windows、Linux 与浏览器。">
+<meta name="theme-color" content="#06080a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="mrpx — Mythroad MRP 模拟器">
+<meta property="og:description" content="把 240×320 的经典 MRP 应用带回桌面与浏览器。Unicorn 执行 ARM/Thumb，DSM 桥接文件、图形、输入与计时器。">
+<meta property="og:image" content="assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="mrpx — Mythroad MRP 模拟器">
+<meta name="twitter:description" content="小小屏幕，熟悉的世界。">
+<meta name="twitter:image" content="assets/img/og.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="./" aria-label="mrpx 首页">
+      <span class="mark">M</span>mrpx<small>MRP EMULATOR</small>
+    </a>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="./" aria-current="page">概览</a>
+      <a href="play/">在线试玩</a>
+      <a href="library/">应用库</a>
+      <a href="docs/">文档</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="ghost-link" href="https://github.com/mythroadx/mrpx" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="btn btn-primary btn-sm" href="https://github.com/mythroadx/mrpx/releases/latest" target="_blank" rel="noopener">下载</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="hero container">
+  <div class="hero-copy">
+    <p class="kicker"><span class="dot"></span>Mythroad MRP Emulator · v0.0.1</p>
+    <h1>小小屏幕，<br><em>熟悉的世界。</em></h1>
+    <p class="lede">那些年装在 240×320 屏幕里的国产手机应用，大多以 MRP 的形态存在。mrpx 用 Unicorn 执行 ARM/Thumb Guest 代码，通过 Mythroad DSM 桥接恢复文件、图形、输入与计时器，把它们带回 Windows、Linux 和浏览器。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="play/">立即在线试玩 <span class="arrow">→</span></a>
+      <a class="btn btn-outline" href="https://github.com/mythroadx/mrpx/releases/latest" target="_blank" rel="noopener">下载 v0.0.1</a>
+      <a class="btn btn-outline" href="library/">浏览应用库</a>
+    </div>
+    <dl class="hero-meta">
+      <span><b>UNICORN</b> 2.1.4 · ARM / Thumb</span>
+      <span><b>CORE</b> C · Win32 / GTK4 / SDL2</span>
+      <span><b>LICENSE</b> GPL-3.0</span>
+    </dl>
+  </div>
+
+  <div class="stage">
+    <div class="device">
+      <div class="device-bezel">
+        <div class="screen" id="heroScreen">
+          <img class="is-on" src="assets/img/games/0b82726c0fd410369a9b410ef6515ab1b383d4e034d00a2d16f7ae0535ac60dc.png" alt="格斗之王拳皇 运行画面">
+          <img src="assets/img/games/6876f6e277a021b1582fdd1e3345f79ca7269b32f5a1fbd7baa440cd636710c2.png" alt="雷电1944 运行画面">
+          <img src="assets/img/games/61d0df43d02ccf90817928d660048bdf6afb42a9e97c8004d9fc592fe2e209c5.png" alt="欢乐斗地主 运行画面">
+          <img src="assets/img/games/f6759caac480798236da88b594ef8c5f349b73fd70bcbcafe3973da3e88f9beb.png" alt="功夫之斧头帮 运行画面">
+          <img src="assets/img/games/ad311674034156fe3a40a4ba7180f32bf7d29fe66a6171c7da78eed4dd6aa1de.png" alt="火焰之纹章 运行画面">
+          <span class="scan"></span>
+          <span class="screen-status"><span>MRPX v0.0.1</span><span>240 × 320</span></span>
+        </div>
+      </div>
+      <div class="device-cap">
+        <span id="heroCaption">格斗之王拳皇 · 302008</span>
+        <span class="keys"><i></i><i></i><i></i></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip-band" aria-hidden="true">
+  <div class="strip" id="strip"><!-- filled from catalog.json --></div>
+</div>
+
+<section class="section container">
+  <div class="split">
+    <div>
+      <p class="eyebrow">What it is</p>
+      <p class="big-quote">不是简单套一层壳，<br>而是把每一次 DSM 调用<br><span class="soft">逐条翻译给宿主。</span></p>
+    </div>
+    <div class="body-copy">
+      <p><strong>MRP</strong> 是斯凯 Mythroad 平台上的手机应用格式，流行于 2005—2010 年间的国产功能机。包内可能是脚本字节码、ARM/Thumb 原生扩展，或两者兼有。</p>
+      <p>mrpx 源自 <a href="https://github.com/vmrp/vmrp" target="_blank" rel="noopener" style="color:var(--phos)">VMRP 原仓库</a>，延续其 ARM Guest 执行与 Mythroad DSM 桥接方向，并整理了现代仓库结构、桌面/Web 构建、测试与发布流程。项目名称、发行包与网页运行文件使用 <code style="font-family:var(--mono);font-size:13px;color:#cfe6d6">mrpx</code>；为兼容保留的内部标识包括 <code style="font-family:var(--mono);font-size:13px;color:#cfe6d6">include/vmrp</code>、<code style="font-family:var(--mono);font-size:13px;color:#cfe6d6">VMRP</code> 编译宏和部分运行时环境变量。</p>
+      <p>宿主构建目标是 x86-64，Guest ABI 保持 32 位 ARM。它目前不是 ESP32 移植版，也不承诺兼容所有 MRP；桌面与 Web 的回归覆盖固定启动器、MPC 测试夹具及 ARM/Thumb 样例，不代表所有设备、网络服务、音频功能或应用均可用。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Capabilities</p>
+      <h2>一套桥接，两种宿主。</h2>
+    </div>
+    <p class="aside">同一份 DSM 实现同时服务桌面与 WebAssembly：桌面用 SDL2 与原生控件，浏览器用 Canvas、键盘映射与 AudioWorklet。</p>
+  </div>
+
+  <div class="feature-grid">
+    <article class="feature">
+      <span class="num">01 / GUEST</span><span class="glyph">ARM</span>
+      <h3>ARM / Thumb 解释执行</h3>
+      <p>Unicorn 2.1.4 执行 Guest 指令，支持 ARM 与 Thumb 混排；调试构建可挂接 Capstone 做指令跟踪。</p>
+    </article>
+    <article class="feature">
+      <span class="num">02 / BRIDGE</span><span class="glyph">DSM</span>
+      <h3>DSM 函数表桥接</h3>
+      <p>文件、图形、输入、网络、计时器与字符串，逐条映射到宿主接口；宿主侧做内存范围与 ABI 检查。</p>
+    </article>
+    <article class="feature">
+      <span class="num">03 / DESKTOP</span><span class="glyph">SDL2</span>
+      <h3>桌面原生外壳</h3>
+      <p>SDL2 负责画面与输入，Windows 使用 Win32 控件、Linux 使用 GTK4。虚拟键盘、横屏旋转、截图与录像只在 Windows 提供。</p>
+    </article>
+    <article class="feature">
+      <span class="num">04 / WEB</span><span class="glyph">WASM</span>
+      <h3>浏览器即开即玩</h3>
+      <p>WebAssembly 版本提供实时画面、21 键虚拟手机键盘、Console 与 MRP 导入，需经 HTTP(S) 或 localhost 打开。</p>
+    </article>
+    <article class="feature">
+      <span class="num">05 / DATA</span><span class="glyph">664</span>
+      <h3>目录与回归夹具</h3>
+      <p>664 个 MRP 包的索引与 242 张自动截图，配合固定 ARM/Thumb 回归样本、内存边界测试与 Web 端自测页。</p>
+    </article>
+    <article class="feature">
+      <span class="num">06 / LIMITS</span><span class="glyph">GPL</span>
+      <h3>边界写在文档里</h3>
+      <p>GPL-3.0 授权。宿主检查不是完整沙箱，运行来源不明的 MRP 仍需谨慎；兼容范围以实际回归结果为准。</p>
+    </article>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Architecture</p>
+      <h2>从 MRP 包到一块屏幕。</h2>
+    </div>
+    <p class="aside">Guest 只看见 Mythroad 的函数表，宿主决定这些调用最终落在 SDL、Win32、GTK4 还是浏览器的 Canvas 与音频线程上。</p>
+  </div>
+
+  <div class="arch">
+    <div class="arch-box">
+      <span class="tag">Layer 01 · Guest</span>
+      <h3>MRP 应用</h3>
+      <ul>
+        <li>脚本字节码与资源包</li>
+        <li>ARM / Thumb 原生扩展</li>
+        <li>240 × 320 逻辑分辨率</li>
+        <li>32 位 Guest ABI</li>
+      </ul>
+    </div>
+    <div class="arch-link">→</div>
+    <div class="arch-box is-core">
+      <span class="tag">Layer 02 · Core</span>
+      <h3>Unicorn + DSM 桥</h3>
+      <ul>
+        <li>ARM/Thumb 指令执行</li>
+        <li>DSM 函数表分派</li>
+        <li>内存范围与 ABI 检查</li>
+        <li>文件、图形、输入、计时器</li>
+      </ul>
+    </div>
+    <div class="arch-link">→</div>
+    <div class="arch-box">
+      <span class="tag">Layer 03 · Host</span>
+      <h3>桌面 / 浏览器</h3>
+      <ul>
+        <li>SDL2 · Win32 · GTK4</li>
+        <li>WebAssembly + Canvas</li>
+        <li>SpessaSynth MIDI 音源</li>
+        <li>x86-64 宿主构建</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="arch-note">桌面与 Web 共用 <code style="font-family:var(--mono);color:#a8b6c3">src/</code>、<code style="font-family:var(--mono);color:#a8b6c3">include/</code> 与 <code style="font-family:var(--mono);color:#a8b6c3">assets/runtime/</code>：前者是宿主与桥接实现，后者是预编译 Guest 模块与 MRP 种子，其清单固定在 <code style="font-family:var(--mono);color:#a8b6c3">assets/runtime/manifest.json</code>。</p>
+</section>
+
+<section class="section container">
+  <div class="stats">
+    <div class="stat"><div class="v">664<small> 包</small></div><p class="k">索引的 MRP 应用与资源包</p></div>
+    <div class="stat"><div class="v">242<small> 张</small></div><p class="k">自动捕获的游戏截图</p></div>
+    <div class="stat"><div class="v">21<small> 键</small></div><p class="k">虚拟手机键盘映射</p></div>
+    <div class="stat"><div class="v">3<small> 平台</small></div><p class="k">Windows · Linux · WebAssembly</p></div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Build</p>
+      <h2>从源码到一块亮起的屏。</h2>
+    </div>
+    <p class="aside">Windows x64 + PowerShell 7 为参考环境；Linux 原生与 WASM 构建见 Linux 指南。所有命令都在仓库根目录执行。</p>
+  </div>
+
+  <div class="steps">
+    <ol class="step-list">
+      <li>
+        <span class="idx">01</span>
+        <div><h3>准备工具链</h3><p>MinGW-w64 GCC 13.2（x86_64-w64-mingw32）、GNU Make、MSYS2 的 sh 与核心工具、SDL2 2.32.10 SDK、Unicorn 2.1.4。</p></div>
+      </li>
+      <li>
+        <span class="idx">02</span>
+        <div><h3>构建并运行桌面版</h3><p><code style="font-family:var(--mono)">make main</code> 生成宿主程序；Guest 运行时与 dsm_gm.mrp 会随构建准备到运行目录。</p></div>
+      </li>
+      <li>
+        <span class="idx">03</span>
+        <div><h3>构建 WebAssembly</h3><p>激活固定 Emscripten 6.0.12 与 Ninja，先 <code style="font-family:var(--mono)">make wasm-unicorn</code> 准备后端，再 <code style="font-family:var(--mono)">make wasm</code> 产出网页运行文件。</p></div>
+      </li>
+      <li>
+        <span class="idx">04</span>
+        <div><h3>回归与发布</h3><p><code style="font-family:var(--mono)">make test test-build test-mrp</code> 跑通本地验证；发布包由 <code style="font-family:var(--mono)">make package</code> 按平台打包。</p></div>
+      </li>
+    </ol>
+
+    <div class="code-card">
+      <div class="code-bar">
+        <span class="dots"><i></i><i></i><i></i></span>PowerShell · mrpx
+        <button class="copy" type="button" data-copy="make main">复制</button>
+      </div>
+<pre class="code"><span class="c"># 桌面构建（Windows / Linux）</span>
+<span class="p">make</span> main
+
+<span class="c"># WebAssembly：先准备固定后端，再编译</span>
+<span class="p">make</span> wasm-unicorn
+<span class="p">make</span> wasm
+
+<span class="c"># 本机 HTTP 服务与回归</span>
+<span class="p">make</span> serve
+<span class="p">make</span> test test-build test-mrp
+
+<span class="c"># 打包发布（windows / linux / wasm）</span>
+<span class="p">make</span> package VERSION=v0.0.1 PLATFORM=wasm</pre>
+    </div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Collection</p>
+      <h2>先挑一个游戏，再谈架构。</h2>
+    </div>
+    <div>
+      <a class="btn btn-outline btn-sm" href="library/">全部 664 个应用 <span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <div class="game-grid">
+    <a class="game-card" href="play/?name=302008_240320_ggdzwqh.mrp&amp;f=https%3A%2F%2Fraw.githubusercontent.com%2Fvmrp%2Fvmrp.github.io%2Fmaster%2Fpublic%2Fmrps%2F302008_240320_ggdzwqh.mrp&amp;title=%E6%A0%BC%E6%96%97%E4%B9%8B%E7%8E%8B%E6%8B%B3%E7%9A%87">
+      <div class="game-shot"><img src="assets/img/games/0b82726c0fd410369a9b410ef6515ab1b383d4e034d00a2d16f7ae0535ac60dc.png" alt="格斗之王拳皇" loading="lazy"></div>
+      <div class="game-meta"><h3>格斗之王拳皇</h3><p>302008 · 杭州斯凯</p></div>
+    </a>
+    <a class="game-card" href="play/?name=1000_240320_gld.mrp&amp;f=https%3A%2F%2Fraw.githubusercontent.com%2Fvmrp%2Fvmrp.github.io%2Fmaster%2Fpublic%2Fmrps%2F1000_240320_gld.mrp&amp;title=%E9%9B%B7%E7%94%B51944">
+      <div class="game-shot"><img src="assets/img/games/6876f6e277a021b1582fdd1e3345f79ca7269b32f5a1fbd7baa440cd636710c2.png" alt="雷电1944" loading="lazy"></div>
+      <div class="game-meta"><h3>雷电1944</h3><p>1000 · 杭州斯凯</p></div>
+    </a>
+    <a class="game-card" href="play/?name=1023_240320_ghlddzb.mrp&amp;f=https%3A%2F%2Fraw.githubusercontent.com%2Fvmrp%2Fvmrp.github.io%2Fmaster%2Fpublic%2Fmrps%2F1023_240320_ghlddzb.mrp&amp;title=%E6%AC%A2%E4%B9%90%E6%96%97%E5%9C%B0%E4%B8%BB">
+      <div class="game-shot"><img src="assets/img/games/61d0df43d02ccf90817928d660048bdf6afb42a9e97c8004d9fc592fe2e209c5.png" alt="欢乐斗地主" loading="lazy"></div>
+      <div class="game-meta"><h3>欢乐斗地主</h3><p>1023 · 杭州斯凯</p></div>
+    </a>
+    <a class="game-card" href="play/?name=302013_240320_ggfftb.mrp&amp;f=https%3A%2F%2Fraw.githubusercontent.com%2Fvmrp%2Fvmrp.github.io%2Fmaster%2Fpublic%2Fmrps%2F302013_240320_ggfftb.mrp&amp;title=%E5%8A%9F%E5%A4%AB%E4%B9%8B%E6%96%A7%E5%A4%B4%E5%B8%AE">
+      <div class="game-shot"><img src="assets/img/games/f6759caac480798236da88b594ef8c5f349b73fd70bcbcafe3973da3e88f9beb.png" alt="功夫之斧头帮" loading="lazy"></div>
+      <div class="game-meta"><h3>功夫之斧头帮</h3><p>302013 · 杭州斯凯</p></div>
+    </a>
+    <a class="game-card" href="play/?name=306002_240320_ghywz.mrp&amp;f=https%3A%2F%2Fraw.githubusercontent.com%2Fvmrp%2Fvmrp.github.io%2Fmaster%2Fpublic%2Fmrps%2F306002_240320_ghywz.mrp&amp;title=%E7%81%AB%E7%84%B0%E4%B9%8B%E7%BA%B9%E7%AB%A0">
+      <div class="game-shot"><img src="assets/img/games/ad311674034156fe3a40a4ba7180f32bf7d29fe66a6171c7da78eed4dd6aa1de.png" alt="火焰之纹章" loading="lazy"></div>
+      <div class="game-meta"><h3>火焰之纹章</h3><p>306002 · 杭州斯凯</p></div>
+    </a>
+    <a class="game-card" href="play/?name=301051_240320_ghyrz.mrp&amp;f=https%3A%2F%2Fraw.githubusercontent.com%2Fvmrp%2Fvmrp.github.io%2Fmaster%2Fpublic%2Fmrps%2F301051_240320_ghyrz.mrp&amp;title=%E7%81%AB%E5%BD%B1%E5%BF%8D%E8%80%85">
+      <div class="game-shot"><img src="assets/img/games/111b5bd6aee16f160a7c77553de089bebd990d073fc142d4a8c1f5bc6964e039.png" alt="火影忍者" loading="lazy"></div>
+      <div class="game-meta"><h3>火影忍者</h3><p>301051 · 杭州斯凯</p></div>
+    </a>
+  </div>
+</section>
+
+<section class="section container" style="border-bottom:0">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Documents</p>
+      <h2>把它拆开来看。</h2>
+    </div>
+    <p class="aside">项目说明按主题拆分：当前实现、来源历史、开发与研究指南。每一条限制都写在文档里，而不是留在口口相传里。</p>
+  </div>
+
+  <div class="doc-grid">
+    <a class="doc-card" href="docs/#project">
+      <span class="tag">PROJECT</span><h3>项目介绍与运行方式</h3>
+      <p>定位、当前平台、主要功能，以及桌面与 Web 的操作差异。</p><span class="go">阅读 →</span>
+    </a>
+    <a class="doc-card" href="docs/#history">
+      <span class="tag">HISTORY</span><h3>项目来源与历史</h3>
+      <p>与 VMRP 原仓库的关系、维护者说明，以及历史 Guest 资料的现状。</p><span class="go">阅读 →</span>
+    </a>
+    <a class="doc-card" href="docs/#build">
+      <span class="tag">DEVELOPMENT</span><h3>开发环境与复现</h3>
+      <p>Windows 参考工具链、桌面最小复现、WASM 构建与浏览器验证。</p><span class="go">阅读 →</span>
+    </a>
+    <a class="doc-card" href="docs/#research">
+      <span class="tag">RESEARCH</span><h3>MRP 格式与 Guest ABI</h3>
+      <p>MRP/EXT/FMT 结构、DSM 函数表、ARM/Thumb 实验与历史 SDK 样本。</p><span class="go">阅读 →</span>
+    </a>
+    <a class="doc-card" href="docs/#release">
+      <span class="tag">RELEASING</span><h3>打包与发布</h3>
+      <p>ZIP 产物、版本标签、GitHub Actions 流程与校验和。</p><span class="go">阅读 →</span>
+    </a>
+    <a class="doc-card" href="https://github.com/mythroadx/mrpx" target="_blank" rel="noopener">
+      <span class="tag">SOURCE</span><h3>仓库与许可证</h3>
+      <p>源码、Issue 与 Pull Request；GPL-3.0 及第三方许可说明。</p><span class="go">GitHub ↗</span>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="brand" href="./"><span class="mark">M</span>mrpx<small>MRP EMULATOR</small></a>
+        <p>经典内核，新的体验。本站只保存应用包信息与截图，不托管 MRP 文件；目录中的下载会跳转到原资源仓库。</p>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <h4>站点</h4>
+          <a href="play/">在线试玩</a>
+          <a href="library/">应用库</a>
+          <a href="docs/">文档</a>
+        </div>
+        <div>
+          <h4>项目</h4>
+          <a href="https://github.com/mythroadx/mrpx" target="_blank" rel="noopener">GitHub ↗</a>
+          <a href="https://github.com/mythroadx/mrpx/releases" target="_blank" rel="noopener">Releases ↗</a>
+          <a href="https://github.com/mythroadx/mrpx/blob/master/LICENSE" target="_blank" rel="noopener">GPL-3.0 ↗</a>
+        </div>
+        <div>
+          <h4>相关</h4>
+          <a href="https://github.com/vmrp/vmrp" target="_blank" rel="noopener">VMRP 原仓库 ↗</a>
+          <a href="https://github.com/zengming00/vmrp" target="_blank" rel="noopener">历史项目 ↗</a>
+          <a href="https://github.com/spessasus/spessasynth_lib" target="_blank" rel="noopener">SpessaSynth ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>MRPX · MYTHROAD MRP EMULATOR · GPL-3.0</span>
+      <span>基于 VMRP 重构整理 · 非官方镜像</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+<script src="assets/js/site.js" defer></script>
+</body>
+</html>
