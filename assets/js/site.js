@@ -18,10 +18,7 @@
       frames[index].classList.remove('is-on');
       index = (index + 1) % frames.length;
       frames[index].classList.add('is-on');
-      const shown = index;
-      setTimeout(() => {
-        if (caption && index === shown) caption.textContent = captions[shown] || '';
-      }, 420);
+      if (caption) caption.textContent = captions[index] || '';
     }, 4200);
   }
 

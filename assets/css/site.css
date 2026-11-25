@@ -305,7 +305,6 @@ button { font: inherit; color: inherit; }
   object-fit: cover;
   image-rendering: pixelated;
   opacity: 0;
-  transition: opacity .55s ease;
 }
 
 .screen img.is-on { opacity: 1; }
