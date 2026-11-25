@@ -8,9 +8,9 @@
   --panel-2: #121821;
   --line: rgba(255, 255, 255, .09);
   --line-soft: rgba(255, 255, 255, .05);
-  --fg: #e8edf1;
-  --fg-dim: #98a3ae;
-  --fg-faint: #5d6873;
+  --fg: #f1f5f8;
+  --fg-dim: #bcc7d2;
+  --fg-faint: #94a1ad;
   --phos: #86efa9;
   --phos-dim: rgba(134, 239, 169, .55);
   --phos-glow: rgba(134, 239, 169, .16);
@@ -33,7 +33,6 @@ body {
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
@@ -47,8 +46,8 @@ body::before {
   background:
     radial-gradient(900px 520px at 78% -8%, rgba(134, 239, 169, .10), transparent 62%),
     radial-gradient(700px 420px at 8% 12%, rgba(255, 190, 99, .06), transparent 60%),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, .022) 0 1px, transparent 1px 34px),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, .022) 0 1px, transparent 1px 34px);
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .014) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .014) 0 1px, transparent 1px 34px);
   mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .55) 55%, transparent 100%);
 }
 
@@ -107,10 +106,10 @@ button { font: inherit; color: inherit; }
 
 .brand small {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .18em;
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: .1em;
   color: var(--fg-faint);
-  font-weight: 400;
   margin-left: 2px;
 }
 
@@ -202,10 +201,11 @@ button { font: inherit; color: inherit; }
   gap: 10px;
   margin: 0 0 26px;
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .22em;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--fg-faint);
+  color: var(--fg-dim);
 }
 
 .kicker .dot {
@@ -227,7 +227,7 @@ button { font: inherit; color: inherit; }
 .hero h1 em {
   font-style: normal;
   color: var(--phos);
-  text-shadow: 0 0 34px rgba(134, 239, 169, .28);
+  text-shadow: 0 0 20px rgba(134, 239, 169, .14);
 }
 
 .lede {
@@ -357,8 +357,8 @@ button { font: inherit; color: inherit; }
   justify-content: space-between;
   padding: 12px 6px 0;
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .14em;
+  font-size: 10.5px;
+  letter-spacing: .1em;
   color: var(--fg-faint);
 }
 
@@ -438,10 +438,11 @@ section { position: relative; }
   display: block;
   margin: 0 0 14px;
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .22em;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--fg-faint);
+  color: var(--fg-dim);
 }
 
 .section-head h2 {
@@ -745,7 +746,7 @@ pre.code .p { color: var(--phos); }
 
 .game-meta { padding: 10px 11px 12px; }
 .game-meta h3 { margin: 0; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.game-meta p { margin: 3px 0 0; font-family: var(--mono); font-size: 10px; letter-spacing: .04em; color: var(--fg-faint); }
+.game-meta p { margin: 3px 0 0; font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em; color: var(--fg-faint); }
 
 /* ---------- doc cards ---------- */
 
@@ -793,7 +794,7 @@ pre.code .p { color: var(--phos); }
 
 .footer-cols { display: flex; gap: 64px; flex-wrap: wrap; }
 .footer-cols div { display: grid; gap: 8px; align-content: start; }
-.footer-cols h4 { margin: 0 0 4px; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; color: var(--fg-faint); font-weight: 500; }
+.footer-cols h4 { margin: 0 0 4px; font-family: var(--mono); font-size: 11px; letter-spacing: .16em; color: var(--fg-faint); font-weight: 500; }
 .footer-cols a { font-size: 13px; color: var(--fg-dim); }
 .footer-cols a:hover { color: var(--phos); }
 
@@ -1296,7 +1297,7 @@ pre.code .p { color: var(--phos); }
 
 .lib-body { padding: 12px 12px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .lib-body h3 { margin: 0; font-size: 14px; font-weight: 620; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lib-body .vendor { font-family: var(--mono); font-size: 10px; letter-spacing: .05em; color: var(--fg-faint); }
+.lib-body .vendor { font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em; color: var(--fg-faint); }
 .lib-body .desc {
   margin: 2px 0 0;
   font-size: 11.5px;
@@ -1309,7 +1310,7 @@ pre.code .p { color: var(--phos); }
   min-height: 2.9em;
 }
 .lib-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; padding-top: 8px; }
-.lib-foot .size { font-family: var(--mono); font-size: 10px; color: var(--fg-faint); }
+.lib-foot .size { font-family: var(--mono); font-size: 10.5px; color: var(--fg-faint); }
 
 .lib-actions { display: flex; gap: 6px; }
 
